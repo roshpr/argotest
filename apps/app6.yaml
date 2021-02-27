@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx6
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-nginx6
+    server: https://kubernetes.default.svc
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+  source:
+    chart: nginx
+    helm:
+      parameters:
+      - name: replicaCount
+        value: "2"
+      - name: service.httpsPort
+        value: "8443"
+      - name: service.type
+        value: NodePort
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 8.5.3
