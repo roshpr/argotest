@@ -6,21 +6,21 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "4"  
 spec:
-	project: default
-	source:
-	  repoURL: 'https://charts.bitnami.com/bitnami'
-	  targetRevision: '*'
-	  helm:
-	    parameters:
-	      - name: persistence.size
-	        value: 1Gi
-	  chart: memcached
-	destination:
-	  server: 'https://kubernetes.default.svc'
-	  namespace: memcache
-	syncPolicy:
-	  automated:
-	    prune: true
-	    selfHeal: true
-	  syncOptions:
-	    - CreateNamespace=true
+  project: default
+  source:
+    repoURL: 'https://charts.bitnami.com/bitnami'
+    targetRevision: '*'
+    helm:
+      parameters:
+        - name: persistence.size
+      value: 1Gi
+    chart: memcached
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: memcache
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
