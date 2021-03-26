@@ -3,14 +3,14 @@ kind: Job
 metadata:
   name: middle
   annotations:
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/sync-wave: "5"  
+    argocd.argoproj.io/hook: PostSync    
 spec:
   template:
     spec:
       containers:
       - name: sleep
         image: alpine:latest
-        command: ["echo", "pre-sync"]
+        command: ["echo", "post-sync"]
       restartPolicy: Never
   backoffLimit: 0
