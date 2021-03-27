@@ -19,4 +19,4 @@ spec:
         path: infra
       destination:
         server: https://kubernetes.default.svc
-        namespace: guestbook
+        namespace: default
