@@ -11,6 +11,6 @@ spec:
     name: in-cluster
   project: default
   source:
-    path: orch-sync
+    path: orchsync
     repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
