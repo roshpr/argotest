@@ -14,3 +14,5 @@ spec:
     path: orchsync
     repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
+    directory:
+      recurse: true
