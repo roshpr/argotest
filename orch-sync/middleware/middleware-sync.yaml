@@ -1,3 +1,19 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: middle-sql-schema
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  template:
+    spec:
+      containers:
+        - name: middle-sql-schema
+          image: alpine:latest
+          command: ["sleep", "5"]
+      restartPolicy: Never
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
