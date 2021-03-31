@@ -65,6 +65,24 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: maint-page-up-sync-1
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "1.5"
+spec:
+  template:
+    spec:
+      containers:
+        - name: page-up
+          image: alpine:latest
+          command: ["sleep", "2"]
+      restartPolicy: Never
+  backoffLimit: 0  
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: frontend-presync
   annotations:
     argocd.argoproj.io/hook: PreSync
@@ -81,7 +99,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: frontend-Sync
+  name: frontend-sync
   annotations:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/sync-wave: "2"
