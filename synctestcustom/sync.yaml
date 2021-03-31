@@ -47,7 +47,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: maint-page-up-0
+  name: maint-page-up-presync
   annotations:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/sync-wave: "1"
@@ -63,7 +63,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: maint-page-up-1
+  name: maint-page-up-sync
   annotations:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
