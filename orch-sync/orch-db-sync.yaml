@@ -14,6 +14,6 @@ spec:
     name: in-cluster
   project: default
   source:
-    path: db
-    repoURL: https://github.com/roshpr/argotest/tree/main/orch-sync
+    path: orch-sync/db
+    repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
