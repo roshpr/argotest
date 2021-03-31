@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: synctest-app
+  name: sync-custom-test-app
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
