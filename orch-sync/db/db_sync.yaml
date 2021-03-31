@@ -1,0 +1,65 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: db-sql-schema
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  template:
+    spec:
+      containers:
+        - name: upgrade-sql-schema
+          image: alpine:latest
+          command: ["sleep", "5"]
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-frontend-sync
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  template:
+    spec:
+      containers:
+        - name: frontend-sql-schema
+          image: alpine:latest
+          command: ["sleep", "5"]
+      restartPolicy: Never  
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: db-frontend
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+        - name: main
+          image: nginx:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-frontend
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80 
