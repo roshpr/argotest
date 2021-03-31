@@ -15,5 +15,5 @@ spec:
   project: default
   source:
     path: db
-    repoURL: https://github.com/roshpr/argotest/orch-sync
+    repoURL: https://github.com/roshpr/argotest/tree/main/orch-sync
     targetRevision: HEAD
