@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "srini"
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "repo"
+    targetRevision: "version"
+    helm:
+      parameters:
+        - name: app_name
+          value: JFM
+      values: |2-
+        {{ infra_data['override_params'] }}
+    chart: "chartname"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: "namespace"
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

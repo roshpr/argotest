@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "srini"
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "repo"
+    targetRevision: "version"
+    helm:
+      parameters:
+        - name: app_name
+          value: JFM
+      values: |2-
+        common:
+          registry: svl-artifactory.juniper.net/
+        daemonSet: false
+        image:
+          pullPolicy: IfNotPresent
+          repository: atom_virtual_docker/datawire/aes
+          tag: 1.9.0
+        redis:
+          create: false
+        replicaCount: 1
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 600Mi
+          requests:
+            cpu: 200m
+            memory: 300Mi
+        test:
+          enabled: false
+
+    chart: "chartname"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: "namespace"
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

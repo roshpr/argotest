@@ -1,0 +1,19 @@
+common:
+  registry: svl-artifactory.juniper.net/
+daemonSet: false
+image:
+  pullPolicy: IfNotPresent
+  repository: atom_virtual_docker/datawire/aes
+  tag: 1.9.0
+redis:
+  create: false
+replicaCount: 1
+resources:
+  limits:
+    cpu: 1000m
+    memory: 600Mi
+  requests:
+    cpu: 200m
+    memory: 300Mi
+test:
+  enabled: false
