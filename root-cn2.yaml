@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     namespace: default
-    name: https://10.87.102.229:6443
+    server: https://10.87.102.229:6443
   project: default
   syncPolicy:
     automated:
