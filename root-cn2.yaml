@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cn2-app
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: default
+    name: https://10.87.102.229:6443
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true  
+  source:
+    path: cn2
+    repoURL: https://github.com/roshpr/argotest
+    targetRevision: HEAD
