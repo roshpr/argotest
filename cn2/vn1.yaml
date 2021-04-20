@@ -1,0 +1,22 @@
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: VirtualNetwork
+metadata:
+  name: vn1
+  annotations:
+    core.juniper.net/display-name: Sample Virtual Network
+    core.juniper.net/description:
+      VirtualNetwork is a collection of end points (interface or ip(s) or MAC(s))
+      that can communicate with each other by default. It is a collection of
+      subnets whose default gateways are connected by an implicit router
+spec:
+  networkIpamReferences:
+    - apiVersion: core.contrail.juniper.net/v1alpha1
+      kind: NetworkIPAM
+      name: ipam1
+      namespace: default
+      attributes:
+        ipamSubnets:
+          - subnet:
+              ipPrefix: 10.0.0.0
+              ipPrefixLen: 24
+            defaultGateway: 10.0.0.1
