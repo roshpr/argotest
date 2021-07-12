@@ -20,7 +20,7 @@ spec:
     helm:
       parameters:
       - name: replicaCount
-        value: "3"
+        value: "2"
       - name: service.httpsPort
         value: "8443"
       - name: service.type
