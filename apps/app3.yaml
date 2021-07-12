@@ -3,6 +3,7 @@ kind: Application
 metadata:
   name: nginx1
   namespace: argocd
+  app: nginx1
   annotations:
     argocd.argoproj.io/sync-wave: "5"  
 spec:
