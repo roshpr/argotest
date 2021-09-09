@@ -1,6 +1,6 @@
 import time
 
-print('--Run analysis and create NW policy--')
+print('--Run analysis and create NW policy from git--')
 retry_max = 5
 retry_cnt = 0
 while retry_cnt < retry_max:
