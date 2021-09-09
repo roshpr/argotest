@@ -1,6 +1,11 @@
 import time
+import sys
 
-print('--Run analysis and create NW policy from git--')
+if sys.argv[1]:
+  val = sys.argv[1]
+else:
+  val = 'No inputs'
+print('--Run analysis and create NW policy: inputs {}--'.format(val))
 retry_max = 5
 retry_cnt = 0
 while retry_cnt < retry_max:
