@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cn2-report-generator
+  namespace: argo
+spec:
+  serviceAccountName: argo-ops-admin
+  entrypoint: cn2-report-dag
+  templates:
+  - name: get-jd-cm
+    resource:
+      action: get
+      manifest: |
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: jdeployer-envconfig
+    outputs:
+      parameters:
+        - name: deployer_image
+          valueFrom:
+            jsonPath: '{.data.deployer_image}'
+        - name: git_server
+          valueFrom:
+            jsonPath: '{.data.GIT_SERVER_URL}'
+        - name: product_name
+          valueFrom:
+            jsonPath: '{.data.product_name}'
+  - name: fetch-nw-policy-tpl
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import time
+        print('--Fetch current NW policy--')
+        retry_max = 5
+        retry_cnt = 0
+        while retry_cnt < retry_max:
+          time.sleep(1)
+          retry_cnt += 1
+          print('processing')
+        print('Completed')
+  - name: fetch-analytics-tpl
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import time
+        print('--Fetch Analytics info--')
+        retry_max = 5
+        retry_cnt = 0
+        while retry_cnt < retry_max:
+          time.sleep(1)
+          retry_cnt += 1
+          print('processing')
+        print('Completed')
+  - name: run-analysis-tpl
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import time
+        print('--Run analysis and create NW policy--')
+        retry_max = 5
+        retry_cnt = 0
+        while retry_cnt < retry_max:
+          time.sleep(1)
+          retry_cnt += 1
+          print('processing')
+        print('Completed')        
+  - name: cn2-report-dag
+    dag:
+      tasks:
+      - name: fetch-current-nw-policy
+        template: fetch-nw-policy-tpl 
+      - name: fetch-analytics-info
+        dependencies: [fetch-current-nw-policy]
+        template: fetch-analytics-tpl   
+      - name: run-analysis-create-policy
+        dependencies: [fetch-analytics-info]
+        template: fetch-nw-policy-tpl                       
