@@ -77,7 +77,7 @@ spec:
         dependencies: [fetch-current-nw-policy]
         template: fetch-analytics-tpl   
 
-      - name: run-analysis-create-nw-policy
+      - name: run-analysis-create-nw-policy-app1
         dependencies: [fetch-analytics-info]
         template: run-analysis-tpl
         arguments:
@@ -85,14 +85,43 @@ spec:
             - name: fw_input
               value: "{{inputs.parameters.fw_application}}"  
 
+      - name: run-analysis-create-nw-policy-app2
+        dependencies: [fetch-analytics-info]
+        template: run-analysis-tpl
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"
+      - name: run-analysis-create-nw-policy-app3
+        dependencies: [fetch-analytics-info]
+        template: run-analysis-tpl
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"
+      - name: run-analysis-create-nw-policy-app4
+        dependencies: [fetch-analytics-info]
+        template: run-analysis-tpl
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"              
       - name: report-policy-findings
-        dependencies: [run-analysis-create-nw-policy]
+        dependencies: [run-analysis-create-nw-policy-app1,run-analysis-create-nw-policy-app2,run-analysis-create-nw-policy-app3,run-analysis-create-nw-policy-app4]
         template: run-analysis-tpl
         arguments:
           parameters:
             - name: fw_input
               value: "{{inputs.parameters.fw_application}}"
 
+      - name: push-configs-git-repo
+        dependencies: [report-policy-findings]
+        template: run-analysis-tpl
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"
+              
       - name: turn-on-firewall
         dependencies: [report-policy-findings]
         template: fetch-nw-policy-tpl 
