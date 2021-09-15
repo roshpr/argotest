@@ -12,7 +12,7 @@ spec:
       parameters:
         - name: fw_input
     script:
-      image: python:alpine3.6
+      image: svl-artifactory.juniper.net/atom-docker-remote/python:alpine3.6
       command: [python]
       source: |
         import time
@@ -26,7 +26,7 @@ spec:
         print('Completed')
   - name: fetch-analytics-tpl
     script:
-      image: python:alpine3.6
+      image: svl-artifactory.juniper.net/atom-docker-remote/python:alpine3.6
       command: [python]
       source: |
         import time
@@ -49,7 +49,7 @@ spec:
         http:
           url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/cn2_py_runner.py 
     script:
-      image: python:alpine3.6
+      image: svl-artifactory.juniper.net/atom-docker-remote/python:alpine3.6
       command: [python]
       args: ["/usr/local/src/cn2_py_runner.py", "{{inputs.parameters.fw_input}}"]
   - name: cn2-report-dag
