@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app-tier-np 
+  namespace: policygen
+spec:
+  podSelector:
+    matchLabels:
+      tier: app
+      appl: hrapp
+  policyTypes:
+  - Ingress
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: db
+          appl: hrapp
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: web
+          appl: hrapp
