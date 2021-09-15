@@ -1,0 +1,103 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cn2-report-generator-v3
+  namespace: argo
+spec:
+  serviceAccountName: argo-ops-admin
+  entrypoint: cn2-report-dag
+  templates:
+  - name: fetch-nw-policy-tpl
+    inputs:
+      parameters:
+        - name: fw_input
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import time
+        print('--Fetch current NW policy-- {{inputs.parameters.fw_input}}')
+        retry_max = 5
+        retry_cnt = 0
+        while retry_cnt < retry_max:
+          time.sleep(1)
+          retry_cnt += 1
+          print('processing')
+        print('Completed')
+  - name: fetch-analytics-tpl
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import time
+        print('--Fetch Analytics info--')
+        retry_max = 5
+        retry_cnt = 0
+        while retry_cnt < retry_max:
+          time.sleep(1)
+          retry_cnt += 1
+          print('processing')
+        print('Completed')
+  - name: run-analysis-tpl
+    inputs:
+      parameters:
+        - name: fw_input      
+      artifacts:
+      - name: pyrunner
+        path: /usr/local/src/cn2_py_runner.py
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/cn2_py_runner.py 
+    script:
+      image: python:alpine3.6
+      command: [python]
+      args: ["/usr/local/src/cn2_py_runner.py", "{{inputs.parameters.fw_input}}"]
+  - name: cn2-report-dag
+    inputs:
+      parameters:
+        - name: fw_application  
+        - name: process_time_period 
+    dag:
+      tasks:
+      - name: turn-off-firewall
+        template: fetch-nw-policy-tpl 
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"        
+      - name: fetch-current-nw-policy
+        template: fetch-nw-policy-tpl 
+        dependencies: [turn-off-firewall]
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"
+
+      - name: fetch-analytics-info
+        dependencies: [fetch-current-nw-policy]
+        template: fetch-analytics-tpl   
+
+      - name: run-analysis-create-nw-policy
+        dependencies: [fetch-analytics-info]
+        template: run-analysis-tpl
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"  
+
+      - name: report-policy-findings
+        dependencies: [run-analysis-create-nw-policy]
+        template: run-analysis-tpl
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"
+
+      - name: turn-on-firewall
+        dependencies: [report-policy-findings]
+        template: fetch-nw-policy-tpl 
+        arguments:
+          parameters:
+            - name: fw_input
+              value: "{{inputs.parameters.fw_application}}"  
+
