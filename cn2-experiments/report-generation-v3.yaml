@@ -108,7 +108,7 @@ spec:
         http:
           url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy3.yaml          
     script:
-      image: svl-artifactory.juniper.net/atom-docker-remote/git
+      image: svl-artifactory.juniper.net/atom-docker/atom-of/jdeployer/ubuntugitcli
       command: [bash]
       source: |
         echo "Push network policies to git repo for syncing"
