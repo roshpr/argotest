@@ -52,6 +52,41 @@ spec:
       image: svl-artifactory.juniper.net/atom-docker-remote/python:alpine3.6
       command: [python]
       args: ["/usr/local/src/cn2_py_runner.py", "{{inputs.parameters.fw_input}}"]
+  - name: report-policy-findings-tpl
+    inputs:
+      parameters:
+        - name: fw_input      
+      artifacts:
+      - name: nwpolicy1
+        path: /usr/local/src/nw-policy1.yaml
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy1.yaml
+      - name: nwpolicy2
+        path: /usr/local/src/nw-policy2.yaml
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy2.yaml
+      - name: nwpolicy3
+        path: /usr/local/src/nw-policy3.yaml
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy3.yaml          
+    script:
+      image: svl-artifactory.juniper.net/atom-docker-remote/busybox
+      command: [bash]
+      source: |
+        echo "Generated network policies"
+        echo "==========================="
+        echo "Network policy 1"
+        cat /usr/local/src/nw-policy1.yaml
+        echo "==========================="
+        echo "Network policy 2"
+        cat /usr/local/src/nw-policy2.yaml        
+        echo "==========================="
+        echo "Network policy 3"
+        cat /usr/local/src/nw-policy3.yaml  
+        echo "==========================="        
   - name: cn2-report-dag
     inputs:
       parameters:
@@ -108,7 +143,7 @@ spec:
               value: "{{inputs.parameters.fw_application}}"              
       - name: report-policy-findings
         dependencies: [run-analysis-create-nw-policy-app1,run-analysis-create-nw-policy-app2,run-analysis-create-nw-policy-app3,run-analysis-create-nw-policy-app4]
-        template: run-analysis-tpl
+        template: report-policy-findings-tpl
         arguments:
           parameters:
             - name: fw_input
