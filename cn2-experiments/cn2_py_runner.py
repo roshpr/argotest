@@ -11,5 +11,9 @@ retry_cnt = 0
 while retry_cnt < retry_max:
   time.sleep(1)
   retry_cnt += 1
-  print('processing')
+  print('processing ...')
+print('The following policies where generated')
+print('1) nwpolicy1.yaml')
+print('2) nwpolicy2.yaml')
+print('3) nwpolicy3.yaml')
 print('Completed')  
