@@ -86,7 +86,45 @@ spec:
         echo "==========================="
         echo "Network policy 3"
         cat /usr/local/src/nw-policy3.yaml  
-        echo "==========================="        
+        echo "==========================="    
+  - name: push-configs-git-repo-tpl
+    inputs:
+      parameters:
+        - name: fw_input      
+      artifacts:
+      - name: nwpolicy1
+        path: /usr/local/src/nw-policy1.yaml
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy1.yaml
+      - name: nwpolicy2
+        path: /usr/local/src/nw-policy2.yaml
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy2.yaml
+      - name: nwpolicy3
+        path: /usr/local/src/nw-policy3.yaml
+        mode: 0755
+        http:
+          url: https://raw.githubusercontent.com/roshpr/argotest/main/cn2-experiments/nw-policy3.yaml          
+    script:
+      image: svl-artifactory.juniper.net/atom-docker-remote/git
+      command: [bash]
+      source: |
+        echo "Push network policies to git repo for syncing"
+        git clone http://git-server.argocd.svc.cluster.local/git/jdeploy.git
+        cd jdeploy
+        mkdir -p cn2experiments
+        cd cn2experiments
+        cp /usr/local/src/nw-policy1.yaml .
+        cp /usr/local/src/nw-policy2.yaml .
+        cp /usr/local/src/nw-policy3.yaml .
+        git config --global user.email "automation@cn2.net"
+        git config --global user.name "CN2 Automation"
+        git add .
+        git commit -m '`date`: add cn2 policies'
+        git push origin master
+        
   - name: cn2-report-dag
     inputs:
       parameters:
@@ -151,7 +189,7 @@ spec:
 
       - name: push-configs-git-repo
         dependencies: [report-policy-findings]
-        template: run-analysis-tpl
+        template: push-configs-git-repo-tpl
         arguments:
           parameters:
             - name: fw_input
