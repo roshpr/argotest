@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prod-config-application
+  namespace: argocd
+  labels:
+    tag: networkconfigs
+    cluster: prod
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: default
+    server: https://172.31.19.49:33337
+  project: default
+  source:
+    path: cfddemo/application
+    repoURL: https://github.com/roshpr/argotest
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+#      prune: true
+      selfHeal: true  
+    syncOptions:
+      - CreateNamespace=true
+
