@@ -1,0 +1,23 @@
+#!/bin/bash
+if [ $# -lt 1 ]; then
+  echo "Usage: setup_cn2_agent [gettoken|setuptunnel <port>]"
+  exit 1
+fi
+OPTION=$1
+if [ "$OPTION" == "gettoken" ]; then
+  SECRET=$(kubectl get sa argo-ops-admin -o=jsonpath='{.secrets[0].name}')
+  ARGO_TOKEN="$(kubectl get secret $SECRET  -o=jsonpath='{.data.token}' | base64 --decode)"
+  echo "Token:"
+  echo $ARGO_TOKEN
+elif [ "$OPTION" == "setuptunnel" ]; then
+  if [ $# -lt 2 ]; then
+    echo "cn2local: Setuptunnel argument port is missing"
+    exit 1
+  fi
+  PORT=$2
+  echo "cn2local: Setting up tunnel to cloud: 2222$PORT"
+  ssh -i .ssh/cn2cloud -f -N -T -R "2222$PORT":127.0.0.1:6443 ubuntu@34.222.20.113
+  echo "cn2local: route 3333$PORT"
+  ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "/usr/bin/setuproute 2222$PORT 3333$PORT"
+  #ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "/usr/bin/sample 2222$PORT 3333$PORT"
+fi
