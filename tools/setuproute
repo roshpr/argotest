@@ -1,0 +1,20 @@
+#!/bin/bash
+if [ $# -lt 2 ]; then
+  echo "Usage: setuproute <localport> <remoteport>"
+  exit 1
+fi
+LOCAL_PORT=$1
+REMOTE_PORT=$2
+echo 1 > /proc/sys/net/ipv4/conf/all/forwarding
+sysctl -w net.ipv4.conf.eth0.route_localnet=1
+echo "cn2cloud: setup route remote $REMOTE_PORT" | tee /tmp/setuproute
+sudo iptables -t nat -I PREROUTING -p tcp -d 172.31.19.49 --dport $REMOTE_PORT -j DNAT --to-destination 127.0.0.1:$LOCAL_PORT
+echo "cn2cloud: setup route local $LOCAL_PORT" | tee /tmp/setuproute
+sudo iptables -t nat -I PREROUTING -p tcp -d 172.31.19.49 --dport $LOCAL_PORT -j DNAT --to-destination 127.0.0.1:$LOCAL_PORT
+if [ $? -eq 0 ]; then
+  echo "cn2cloud: route success" | tee /tmp/setuproute
+  netstat -lan|grep "127.0.0.1:2222"|grep LISTEN| awk '{print $4}'
+else
+  echo "cn2cloud: route failed" | tee /tmp/setuproute
+  netstat -lan|grep "127.0.0.1:2222"|grep LISTEN| awk '{print $4}'
+fi
