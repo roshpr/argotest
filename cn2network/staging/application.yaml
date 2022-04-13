@@ -1,10 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: stagin-config-application
+  name: staging-config-application
   namespace: argocd
   labels:
-    tag: networkconfigs  
+    tag: networkconfigs
+    cluster: staging
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:

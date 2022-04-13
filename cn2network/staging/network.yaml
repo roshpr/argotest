@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
   labels:
     tag: networkconfigs
+    cluster: staging
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:

@@ -4,9 +4,8 @@ metadata:
   name: shopping
 spec:
   destination:
-    name: ''
     namespace: webtier
-    server: 'https://kubernetes.default.svc'
+    server: https://172.31.19.49:33336
   source:
     path: ''
     repoURL: 'https://charts.bitnami.com/bitnami'

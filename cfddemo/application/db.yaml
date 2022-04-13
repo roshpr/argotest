@@ -4,9 +4,8 @@ metadata:
   name: database
 spec:
   destination:
-    name: ''
     namespace: dbtier
-    server: 'https://kubernetes.default.svc'
+    server: https://172.31.19.49:33336
   source:
     path: ''
     repoURL: 'https://charts.bitnami.com/bitnami'
