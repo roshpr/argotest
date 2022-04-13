@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cn2-prod
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+    tag: clusters
+type: Opaque
+stringData:
+  name: cn2-prod
+  server: https://172.31.19.49:33336
+  config: |
+    {
+      "bearerToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijdka2I5UzlpY3k5SGtLZUFTNHYxSUFSMnB2RzkyVEhCRDlQUTlFU3pTOVkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImFyZ28tb3BzLWFkbWluLXRva2VuLXJ2NW5jIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFyZ28tb3BzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiMzM0OTNiMDYtNTdhMS00ZjY1LTgzOTgtNTE0NzE3YmE2MGEyIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6YXJnby1vcHMtYWRtaW4ifQ.lVlyS4Ffp-hFJpZT2SXOz_IxphUTbDawlYHnEpjqxTiBFKazlvsT9FrzrcI2h-pLxU0amYRiqDOOZHeD-SFDZ_vc0kg4hSIjOy_BT4h7z04jLQkACR8m2dr4-jg3EF_0QcjSih0pN6k9IoAukBcvGt8KG9dJykI_LPIwryICVLe7cSCxL1mpMVbAOA02HojfyX4gzi23ddjvm09dKQAmdse1t3tO6G4EbIBHfKdx0vPMzcKgxTHlQe5Q5oK7kvCt0mbRzBuDnz-CUxAF8IRr3BqBiVM8P-zLyErlp6kQQDXZgU4mhmzrEIq1rcNPjbXI7CK_bA73LypwtPnSXrjkEw",
+      "tlsClientConfig": {
+        "insecure":true
+      }
+    }
