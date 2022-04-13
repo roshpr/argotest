@@ -1,0 +1,21 @@
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: VirtualNetworkRouter
+metadata:
+  namespace: dbtier
+  name: vnr-dbtier
+  labels:
+      vnr: vnr-dbtier
+spec:
+  type: mesh
+  virtualNetworkSelector:
+    matchLabels:
+      core.juniper.net/virtualnetwork: isolated-namespace-service-virtualnetwork
+  import:
+    virtualNetworkRouters:
+      - virtualNetworkRouterSelector:
+          matchLabels:
+            vnr: vnr-webtier
+        namespaceSelector:
+          matchLabels:
+            ns: webtier
+
