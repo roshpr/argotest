@@ -15,7 +15,7 @@ spec:
   project: default
   source:
     path: cfddemo/network
-    repoURL: https://github.com/Juniper/contrail-pipelines
+    repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
   syncPolicy:
     automated:
