@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: staging-base
+  name: staging-config-base
   namespace: argocd
   labels:
     tag: networkconfigs
