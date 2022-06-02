@@ -1,0 +1,86 @@
+0) Worker K8: Create a ssh reverse tunnel to direct 22223 port to local 6443 port from the cloud
+	# ssh -i .ssh/jfm -f -N -T -R 22223:127.0.0.1:6443 ubuntu@34.222.20.113
+
+1) Add iptable for redirecting external ip:port to localhost
+	#  iptables -t nat -I PREROUTING -p tcp -d 172.31.19.49 --dport 33333 -j DNAT --to-destination 127.0.0.1:22223
+	#  sysctl -w net.ipv4.conf.eth0.route_localnet=1
+	#  iptables -t nat -I PREROUTING -p tcp -d 172.31.19.49 --dport 22223 -j DNAT --to-destination 127.0.0.1:22223
+
+2) Example K8 register
+* Create role, rolebinding, serviceaccount
+* Geting bearer Token
+-  SECRET=$(kubectl get sa argo-ops-admin -o=jsonpath='{.secrets[0].name}')
+-  ARGO_TOKEN="Bearer $(kubectl get secret $SECRET  -o=jsonpath='{.data.token}' | base64 --decode)" 
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cn2-cluster-scale2
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+type: Opaque
+stringData:
+  name: cn2-cluster-scale2
+  server: https://172.31.19.49:33335
+  config: |
+    {
+      "bearerToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6I",
+      "tlsClientConfig": {
+        "insecure":true
+      }
+    }
+---- 
+3) Unable to create application: Get "https://172.31.19.49:22223/version?timeout=32s": x509: certificate is valid for 10.233.0.1, 10.87.66.203, 127.0.0.1, not 172.31.19.49
+
+3a) Unable to create application: Unable to apply K8s REST config defaults: specifying a root certificates file with the insecure flag is not allowed
+
+	Fix: remove cadata and set insecure=true in k8cluster register
+
+4) failed to sync cluster https://172.31.19.49:22223: failed to load initial state of resource Node: nodes is forbidden: User  "system:serviceaccount:default:argo-ops-admin" cannot list resource "nodes" in API group "" at the cluster scope
+
+5) Unable to load data: error getting cached app state: ComparisonError: failed to sync cluster https://172.31.19.49:22223: failed to load initial state of resource Node: nodes is forbidden: User "system:serviceaccount:default:argo-ops-admin" cannot list resource "nodes" in API group "" at the cluster scope;ComparisonError: failed to sync cluster https://172.31.19.49:22223: failed to load initial state of resource Node: nodes is forbidden: User "system:serviceaccount:default:argo-ops-admin" cannot list resource "nodes" in API group "" at the cluster scope
+
+	Fix: Argo role binding was refering to wrong namespace for service account. (user error)
+
+
+=====
+RBAC
+=====
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    name: argo-ops-admin
+  name: argo-ops-admin
+rules:
+  - apiGroups: ['*']
+    resources: ['*']
+    verbs: ['*']
+  - nonResourceURLs: ['*']
+    verbs: ['*']
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    name: argo-ops-admin
+  name: argo-ops-admin
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    name: argo-ops-admin
+  name: argo-ops-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-ops-admin
+subjects:
+  - kind: ServiceAccount
+    name: argo-ops-admin
+    namespace: default
+
+
