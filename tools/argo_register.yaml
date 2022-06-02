@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cn2-cluster-PORT
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+type: Opaque
+stringData:
+  name: cn2-cluster-PORT
+  server: https://172.31.19.49:PORT
+  config: |
+    {
+      "bearerToken": "TOKEN",
+      "tlsClientConfig": {
+        "insecure":true
+      }
+    }
