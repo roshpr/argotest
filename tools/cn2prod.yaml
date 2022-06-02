@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cn2-k8cluster2
+  name: cn2-cluster-PORT
   namespace: argocd
   labels:
     tag: deployment
@@ -9,7 +9,7 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    server: 'https://172.31.19.49:33338'
+    server: 'https://172.31.19.49:PORT'
     namespace: default
   project: default
   source:
