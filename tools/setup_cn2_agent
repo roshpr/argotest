@@ -1,32 +1,38 @@
 #!/bin/bash
 if [ $# -lt 1 ]; then
-  echo "Usage: setup_cn2_agent [gettoken|setuptunnel <port>]"
+  echo "Usage: setup_cn2_agent <port>"
   exit 1
 fi
 
-OPTION=$1
-# Download Yamls
+PORT=$1
+echo "### Download Yamls ###"
 wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo-sa.yaml
+wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_register.yaml
+wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_application.yaml
+
+echo "### Setup Service account ###"
 kubectl apply -f argo-sa.yaml
 SECRET=$(kubectl get sa argo-ops-admin -o=jsonpath='{.secrets[0].name}')
 ARGO_TOKEN="$(kubectl get secret $SECRET  -o=jsonpath='{.data.token}' | base64 --decode)"
 echo "Token:"
 echo $ARGO_TOKEN > sa_token.txt
-wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_register.yaml
 
-if [ $# -lt 2 ]; then
-  echo "cn2local: Setuptunnel argument port is missing"
-  exit 1
-fi
-PORT=$2
+echo "### Setup and start Tunnel process ###"
 DESTPORT="333$PORT"
-sed -i "s/PORT/$DESTPORT/g" argo_register.yaml
-sed -i "s/TOKEN/$ARGO_TOKEN/g" argo_register.yaml
-scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_register.yaml ubuntu@34.222.20.113:
-echo "cn2local: Setting up tunnel to cloud: 2222$PORT"
+echo "cn2local: Setting up tunnel to cloud: 222$PORT"
 ssh -i .ssh/cn2cloud -f -N -T -R "222$PORT":127.0.0.1:6443 ubuntu@34.222.20.113
 sleep 2
 echo "cn2local: route $DESTPORT"
 ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "/usr/bin/setuproute 222$PORT $DESTPORT"
-#ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "/usr/bin/sample 222$PORT $DESTPORT"
 
+echo "###  Register K8 cluster to Argo ###"
+sed -i "s/PORT/$DESTPORT/g" argo_register.yaml
+sed -i "s/TOKEN/$ARGO_TOKEN/g" argo_register.yaml
+scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_register.yaml ubuntu@34.222.20.113:
+ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_register.yaml -n argocd"
+sleep 20
+
+echo "### Create Argo application to install CN2 ###"
+sed -i "s/PORT/$DESTPORT/g" argo_application.yaml
+scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_application.yaml ubuntu@34.222.20.113:
+ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_application.yaml -n argocd"
