@@ -3,7 +3,8 @@ if [ $# -lt 1 ]; then
   echo "Usage: setup_cn2_agent <port>"
   exit 1
 fi
-
+set -x
+(
 PORT=$1
 echo "### Download Yamls ###"
 wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo-sa.yaml
@@ -36,3 +37,4 @@ echo "### Create Argo application to install CN2 ###"
 sed -i "s/PORT/$DESTPORT/g" argo_application.yaml
 scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_application.yaml ubuntu@34.222.20.113:
 ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_application.yaml -n argocd"
+) 2>&1 | tee setup.log
