@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: site-a-cluster1
+  name: site-a-cluster1-network
   namespace: argocd
   labels:
     tag: deployment
@@ -14,7 +14,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/roshpr/argotest'
-    path: cn2deploy
+    path: cn2apps/networks
     targetRevision: HEAD
   syncPolicy:
     automated:
