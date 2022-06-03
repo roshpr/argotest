@@ -1,0 +1,92 @@
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: Subnet
+metadata:
+  name: test-vn2-subnet
+  namespace: test-ns
+  annotations:
+    core.juniper.net/display-name: test-vn1-subnet
+spec:
+  cidr: "2.2.2.0/24"
+  defaultGateway: 2.2.2.1
+---
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: Subnet
+metadata:
+  name: test-vn3-subnet
+  namespace: test-ns
+  annotations:
+    core.juniper.net/display-name: test-vn1-subnet
+spec:
+  cidr: "3.3.3.0/24"
+  defaultGateway: 3.3.3.1
+---
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: Subnet
+metadata:
+  name: test-vn4-subnet
+  namespace: test-ns
+  annotations:
+    core.juniper.net/display-name: test-vn1-subnet
+spec:
+  cidr: "4.4.4.0/24"
+  defaultGateway: 4.4.4.1
+---
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: VirtualNetwork
+metadata:
+  name: test-vn2
+  namespace: test-ns
+  labels:
+    vnsite: london 
+  annotations:
+    core.juniper.net/display-name: Sample Virtual Network
+    core.juniper.net/description:
+      VirtualNetwork is a collection of end points (interface or ip(s) or MAC(s))
+      that can communicate with each other by default. It is a collection of
+      subnets whose default gateways are connected by an implicit router
+spec:
+  v4SubnetReference:
+    apiVersion: core.contrail.juniper.net/v1alpha1
+    kind: Subnet
+    namespace: test-ns
+    name: test-vn2-subnet
+---
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: VirtualNetwork
+metadata:
+  name: test-vn3
+  namespace: test-ns
+  labels:
+    vnsite: london 
+  annotations:
+    core.juniper.net/display-name: Sample Virtual Network
+    core.juniper.net/description:
+      VirtualNetwork is a collection of end points (interface or ip(s) or MAC(s))
+      that can communicate with each other by default. It is a collection of
+      subnets whose default gateways are connected by an implicit router
+spec:
+  v4SubnetReference:
+    apiVersion: core.contrail.juniper.net/v1alpha1
+    kind: Subnet
+    namespace: test-ns
+    name: test-vn3-subnet
+---
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: VirtualNetwork
+metadata:
+  name: test-vn4
+  namespace: test-ns
+  labels:
+    vnsite: london 
+  annotations:
+    core.juniper.net/display-name: Sample Virtual Network
+    core.juniper.net/description:
+      VirtualNetwork is a collection of end points (interface or ip(s) or MAC(s))
+      that can communicate with each other by default. It is a collection of
+      subnets whose default gateways are connected by an implicit router
+spec:
+  v4SubnetReference:
+    apiVersion: core.contrail.juniper.net/v1alpha1
+    kind: Subnet
+    namespace: test-ns
+    name: test-vn4-subnet
