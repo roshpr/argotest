@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: site-a-cluster1
+  name: site-a-cluster1-cni
   namespace: argocd
   labels:
     tag: deployment
