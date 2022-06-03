@@ -10,7 +10,7 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    server: 'https://172.31.19.49:33311'
+    server: 'https://172.31.19.49:33320'
     namespace: default
   project: default
   source:
