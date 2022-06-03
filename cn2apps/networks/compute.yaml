@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod2
+  namespace: test-ns
+  annotations:
+    k8s.v1.cni.cncf.io/networks: test-vn2
+spec:
+  containers:
+    - name: test-vn2-client
+      image: svl-artifactory.juniper.net/gcr.io-docker-remote/google-containers/toolbox
+      command: ["bash","-c","ip route add 2.2.2.0/24 via 2.2.2.1; ip route add 3.3.3.0/24 via 2.2.2.1; ip route add 4.4.4.0/24 via 2.2.2.1; while true; do sleep 60s; done"]
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        privileged: true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod3
+  namespace: test-ns
+  annotations:
+    k8s.v1.cni.cncf.io/networks: test-vn3
+spec:
+  containers:
+    - name: test-vn3-client
+      image: svl-artifactory.juniper.net/gcr.io-docker-remote/google-containers/toolbox
+      command: ["bash","-c","ip route add 2.2.2.0/24 via 3.3.3.1; ip route add 3.3.3.0/24 via 3.3.3.1; ip route add 4.4.4.0/24 via 3.3.3.1; while true; do sleep 60s; done"]
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        privileged: true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod4
+  namespace: test-ns
+  annotations:
+    k8s.v1.cni.cncf.io/networks: test-vn4
+spec:
+  containers:
+    - name: test-vn4-client
+      image: svl-artifactory.juniper.net/gcr.io-docker-remote/google-containers/toolbox
+      command: ["bash","-c","ip route add 2.2.2.0/24 via 4.4.4.1; ip route add 3.3.3.0/24 via 4.4.4.1; ip route add 4.4.4.0/24 via 4.4.4.1; while true; do sleep 60s; done"]
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        privileged: true
