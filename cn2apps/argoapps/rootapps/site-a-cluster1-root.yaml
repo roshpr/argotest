@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cn2-app
+  name: site-a-cluster1
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -15,6 +15,6 @@ spec:
       prune: true
       selfHeal: true  
   source:
-    path: argoapps/rootapps/site-a-cluster1
+    path: argoapps/rootapps/site-a-cluster
     repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
