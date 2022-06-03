@@ -126,7 +126,7 @@ spec:
         - sh
         - -c
         - /manager --metrics-addr 127.0.0.1:8081
-        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-deployer:latest
+        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-deployer:R22.2-10
         name: contrail-k8s-deployer
       hostNetwork: true
       initContainers:
@@ -134,16 +134,48 @@ spec:
         - sh
         - -c
         - kustomize build /crd | kubectl apply -f -
-        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-crdloader:latest
+        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-crdloader:R22.2-10
         name: contrail-k8s-crdloader
+      - command:
+        - sh
+        - -c
+        - kubectl delete -n contrail-system secret etcd-certs-secret; kubectl create -n contrail-system secret generic etcd-certs-secret --from-file=ca.crt=/var/keys/etcd/ca.crt  --from-file=tls.crt=/var/keys/apiserver-etcd-client.crt  --from-file=tls.key=/var/keys/apiserver-etcd-client.key
+        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-crdloader:latest
+        name: contrail-k8s-createetcdsecret
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /var/keys/etcd/ca.crt
+          name: ca-crt
+        - mountPath: /var/keys/apiserver-etcd-client.crt
+          name: apiserver-etcd-client-crt
+        - mountPath: /var/keys/apiserver-etcd-client.key
+          name: apiserver-etcd-client-key
       nodeSelector:
         node-role.kubernetes.io/master: ""
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsUser: 1000
       serviceAccountName: contrail-deploy-serviceaccount
       tolerations:
       - effect: NoSchedule
         operator: Exists
       - effect: NoExecute
         operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes/pki/etcd/ca.crt
+          type: File
+        name: ca-crt
+      - hostPath:
+          path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+          type: File
+        name: apiserver-etcd-client-crt
+      - hostPath:
+          path: /etc/kubernetes/pki/apiserver-etcd-client.key
+          type: File
+        name: apiserver-etcd-client-key
 ---
 apiVersion: v1
 data:
@@ -155,8 +187,9 @@ data:
       namespace: contrail-system
     spec:
       common:
+        replicas: 1
         containers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-apiserver:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-apiserver:R22.2-10
           name: contrail-k8s-apiserver
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -169,8 +202,9 @@ data:
       namespace: contrail-system
     spec:
       common:
+        replicas: 1
         containers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-controller:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-controller:R22.2-10
           name: contrail-k8s-controller
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -183,8 +217,9 @@ data:
       namespace: contrail
     spec:
       common:
+        replicas: 1
         containers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-kubemanager:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-kubemanager:R22.2-10
           name: contrail-k8s-kubemanager
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -196,13 +231,14 @@ data:
       namespace: contrail
     spec:
       common:
+        replicas: 1
         containers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-control:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-control:R22.2-10
           name: contrail-control
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:R22.2-10
           name: contrail-control-telemetry-exporter
         initContainers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
           name: contrail-init
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -210,31 +246,13 @@ data:
     apiVersion: dataplane.juniper.net/v1alpha1
     kind: Vrouter
     metadata:
-      name: contrail-vrouter-masters
+      name: contrail-vrouter-dpdk-nodes
       namespace: contrail
     spec:
-      common:
-        containers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-agent:latest
-          name: contrail-vrouter-agent
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:latest
-          name: contrail-watcher
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:latest
-          name: contrail-vrouter-telemetry-exporter
-        initContainers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:latest
-          name: contrail-init
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-cni-init:latest
-          name: contrail-cni-init
-        nodeSelector:
-          node-role.kubernetes.io/master: ""
-    ---
-    apiVersion: dataplane.juniper.net/v1alpha1
-    kind: Vrouter
-    metadata:
-      name: contrail-vrouter-nodes
-      namespace: contrail
-    spec:
+      agent:
+        virtualHostInterface:
+          physicalInterface: eth1
+      agentModeType: dpdk
       common:
         affinity:
           nodeAffinity:
@@ -245,17 +263,100 @@ data:
                   operator: NotIn
                   values:
                   - ""
+                - key: agent-mode
+                  operator: In
+                  values:
+                  - dpdk
         containers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-agent:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-agent:R22.2-10
           name: contrail-vrouter-agent
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-dpdk:R22.2-10
+          name: contrail-vrouter-agent-dpdk
+          resources:
+            limits:
+              hugepages-2Mi: 3Gi
+            requests:
+              memory: 3Gi
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
           name: contrail-watcher
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:R22.2-10
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
           name: contrail-init
-        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-cni-init:latest
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-kernel-init-dpdk:R22.2-10
+          name: contrail-vrouter-kernel-init-dpdk
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-cni-init:R22.2-10
+          name: contrail-cni-init
+      dpdk:
+        cpuCoreMask: 2,3
+        dpdkCommandAdditionalArgs: --yield_option 0
+        dpdkCtrlThreadMask: 4,5
+        dpdkUioDriver: uio_pci_generic
+        hugePages: "3072"
+        hugePagesDir: /dev/hugepages
+        serviceCoreMask: 4,5
+      maxUnavailablePercentage: 100%
+    ---
+    apiVersion: dataplane.juniper.net/v1alpha1
+    kind: Vrouter
+    metadata:
+      name: contrail-vrouter-masters
+      namespace: contrail
+    spec:
+      agent:
+        virtualHostInterface:
+          gateway: 5.5.5.254
+      common:
+        containers:
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-agent:R22.2-10
+          name: contrail-vrouter-agent
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
+          name: contrail-watcher
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:R22.2-10
+          name: contrail-vrouter-telemetry-exporter
+        initContainers:
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
+          name: contrail-init
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-cni-init:R22.2-10
+          name: contrail-cni-init
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+    ---
+    apiVersion: dataplane.juniper.net/v1alpha1
+    kind: Vrouter
+    metadata:
+      name: contrail-vrouter-nodes
+      namespace: contrail
+    spec:
+      agent:
+        virtualHostInterface:
+          gateway: 5.5.5.254
+      common:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - ""
+                - key: agent-mode
+                  operator: NotIn
+                  values:
+                  - dpdk
+        containers:
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-vrouter-agent:R22.2-10
+          name: contrail-vrouter-agent
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
+          name: contrail-watcher
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-exporter:R22.2-10
+          name: contrail-vrouter-telemetry-exporter
+        initContainers:
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-init:R22.2-10
+          name: contrail-init
+        - image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-cni-init:R22.2-10
           name: contrail-cni-init
       maxUnavailablePercentage: 100%
 kind: ConfigMap
@@ -278,7 +379,7 @@ spec:
         - sh
         - -c
         - until kubectl wait --for condition=established --timeout=60s crd/apiservers.configplane.juniper.net; do echo 'waiting for apiserver crd'; sleep 2; done && until ls /tmp/contrail/contrail-cr.yaml; do sleep 2; echo 'waiting for manifest'; done && kubectl apply -f /tmp/contrail/contrail-cr.yaml && kubectl -n contrail delete job apply-contrail
-        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-applier:latest
+        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-k8s-applier:R22.2-10
         name: applier
         volumeMounts:
         - mountPath: /tmp/contrail
