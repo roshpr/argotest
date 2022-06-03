@@ -8,13 +8,13 @@ metadata:
 spec:
   destination:
     namespace: default
-    server: https://10.87.102.229:6443
+    name: in-cluster
   project: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true  
   source:
-    path: argoapps/rootapps/site-a-cluster
+    path: cn2apps/argoapps/site-a-cluster
     repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
