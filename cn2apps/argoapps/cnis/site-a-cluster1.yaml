@@ -15,7 +15,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/roshpr/argotest'
-    path: cn2deploy
+    path: cn2apps/cnis
     targetRevision: HEAD
   syncPolicy:
     automated:
