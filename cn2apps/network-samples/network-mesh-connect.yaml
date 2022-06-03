@@ -1,0 +1,14 @@
+apiVersion: core.contrail.juniper.net/v1alpha1
+kind: VirtualNetworkRouter
+metadata:
+  name: vnrmesh
+  namespace: test-ns
+spec:
+  import: {}
+  type: mesh
+  virtualNetworkSelector:
+    matchExpressions:
+    - key: vnsite
+      operator: In
+      values:
+      - london
