@@ -3,11 +3,6 @@ kind: Namespace
 metadata:
   name: test-ns
 ---  
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: test-ns
----  
 apiVersion: core.contrail.juniper.net/v1alpha1
 kind: Subnet
 metadata:
