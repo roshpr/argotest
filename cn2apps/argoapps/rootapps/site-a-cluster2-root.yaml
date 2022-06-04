@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: site-a-cluster2
+  name: site-a-cluster2-main
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
