@@ -14,9 +14,9 @@ wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_register.
 echo "### Setup Service account ###"
 kubectl apply -f argo-sa.yaml
 SECRET=$(kubectl get sa argo-ops-admin -o=jsonpath='{.secrets[0].name}')
-ARGO_TOKEN="$(kubectl get secret $SECRET  -o=jsonpath='{.data.token}' | base64 --decode)"
+ARGOTOKEN="$(kubectl get secret $SECRET  -o=jsonpath='{.data.token}' | base64 --decode)"
 echo "Token:"
-echo $ARGO_TOKEN > sa_token.txt
+echo $ARGOTOKEN > sa_token.txt
 
 echo "### Setup and start Tunnel process ###"
 DESTPORT="333$PORT"
@@ -28,7 +28,7 @@ ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "/usr/b
 
 echo "###  Register K8 cluster to Argo ###"
 sed -i "s/PORT/$DESTPORT/g" argo_register.yaml
-sed -i "s/TOKEN/$ARGO_TOKEN/g" argo_register.yaml
+sed -i "s/TOKEN/$ARGOTOKEN/g" argo_register.yaml
 scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_register.yaml ubuntu@34.222.20.113:
 ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_register.yaml -n argocd"
 sleep 20
