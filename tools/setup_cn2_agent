@@ -9,7 +9,7 @@ PORT=$1
 echo "### Download Yamls ###"
 wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo-sa.yaml
 wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_register.yaml
-wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_application.yaml
+#wget https://raw.githubusercontent.com/roshpr/argotest/main/tools/argo_application.yaml
 
 echo "### Setup Service account ###"
 kubectl apply -f argo-sa.yaml
