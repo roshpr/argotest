@@ -16,7 +16,7 @@ spec:
     repoURL: 'https://github.com/roshpr/argotest'
     path: cn2apps/cnis
     targetRevision: HEAD
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+#  syncPolicy:
+#    automated:
+#      prune: true
+#      selfHeal: true
