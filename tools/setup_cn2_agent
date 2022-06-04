@@ -32,9 +32,9 @@ sed -i "s/TOKEN/$ARGO_TOKEN/g" argo_register.yaml
 scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_register.yaml ubuntu@34.222.20.113:
 ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_register.yaml -n argocd"
 sleep 20
-
-echo "### Create Argo application to install CN2 ###"
-sed -i "s/PORT/$DESTPORT/g" argo_application.yaml
-scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_application.yaml ubuntu@34.222.20.113:
-ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_application.yaml -n argocd"
+exit 0
+#echo "### Create Argo application to install CN2 ###"
+#sed -i "s/PORT/$DESTPORT/g" argo_application.yaml
+#scp -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" argo_application.yaml ubuntu@34.222.20.113:
+#ssh -i .ssh/cn2cloud  -o "StrictHostKeyChecking no" ubuntu@34.222.20.113 "kubectl apply -f argo_application.yaml -n argocd"
 ) 2>&1 | tee setup.log
