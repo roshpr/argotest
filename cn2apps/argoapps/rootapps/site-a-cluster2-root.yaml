@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: site-a-cluster2
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: default
+    name: in-cluster
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true  
+  source:
+    path: cn2apps/argoapps/site-a-cluster2
+    repoURL: https://github.com/roshpr/argotest
+    targetRevision: HEAD
