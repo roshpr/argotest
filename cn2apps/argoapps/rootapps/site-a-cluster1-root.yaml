@@ -15,6 +15,6 @@ spec:
       prune: true
       selfHeal: true  
   source:
-    path: cn2apps/argoapps/site-a-cluster
+    path: cn2apps/argoapps/site-a-cluster1
     repoURL: https://github.com/roshpr/argotest
     targetRevision: HEAD
