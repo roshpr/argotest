@@ -10,7 +10,7 @@ stringData:
   server: https://172.31.19.49:PORT
   config: |
     {
-      "bearerToken": "ARGO_TOKEN",
+      "bearerToken": "TOKEN",
       "tlsClientConfig": {
         "insecure":true
       }
