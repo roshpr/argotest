@@ -1,20 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: site-b-cluster1-main
+  name: siteb-cluster1-cni
   namespace: argocd
+  labels:
+    tag: deployment
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
+    server: 'https://172.31.19.49:33312'
     namespace: default
-    name: in-cluster
   project: default
+  source:
+    repoURL: 'https://github.com/roshpr/argotest'
+    path: cn2apps/cnis
+    targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true  
-  source:
-    path: cn2apps/argoapps/site-b-cluster1
-    repoURL: https://github.com/roshpr/argotest
-    targetRevision: HEAD
+      selfHeal: true
